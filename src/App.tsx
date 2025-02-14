@@ -1,13 +1,16 @@
 import "./App.css";
 import SidePanel from "./sections/SidePanel";
 import Map from "./sections/Map";
+import { DrawingProvider } from "./DrawingProvider";
 
 function App() {
   return (
-    <div style={{ height: "100vh", display: "flex" }}>
-      <SidePanel />
-      <Map />
-    </div>
+    <DrawingProvider>
+      <div style={{ height: "100vh", display: "flex" }}>
+        <SidePanel />
+        <Map />
+      </div>
+    </DrawingProvider>
   );
 }
 

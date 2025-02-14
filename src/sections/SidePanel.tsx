@@ -1,4 +1,8 @@
+import Button from "../Button";
+import { useDrawing } from "../DrawingProvider";
+
 const SidePanel = () => {
+  const { startDrawing, isDrawing, cancelDrawing } = useDrawing();
   return (
     <div
       style={{
@@ -10,8 +14,15 @@ const SidePanel = () => {
         boxSizing: "border-box",
       }}
     >
-      <h1 style={{ fontSize: "1.5em", marginBottom: "10px" }}>Side Panel</h1>
-      <p style={{ fontSize: "1em", color: "#333" }}>Let's draw a rectangle!</p>
+      <h1 style={{ fontSize: "1.5em", marginBottom: "10px" }}>
+        Let's draw a rectangle!
+      </h1>
+      <Button onClick={startDrawing} disabled={isDrawing}>
+        Start Drawing!
+      </Button>
+      <Button onClick={cancelDrawing} disabled={!isDrawing}>
+        Cancel
+      </Button>
     </div>
   );
 };

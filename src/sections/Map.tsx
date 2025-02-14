@@ -1,17 +1,22 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import Maplibre, {
   Layer,
-  LngLat,
   MapLayerMouseEvent,
   Source,
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { useDrawing } from "../DrawingProvider";
 
 const Map = () => {
   const mapRef = useRef(null);
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [startPoint, setStartPoint] = useState<LngLat | null>(null);
-  const [rectangle, setRectangle] = useState<[LngLat, LngLat] | null>(null);
+  const {
+    isDrawing,
+    stopDrawing,
+    startPoint,
+    setStartPoint,
+    rectangle,
+    setRectangle,
+  } = useDrawing();
 
   const handleMapClick = (e: MapLayerMouseEvent) => {
     if (isDrawing) {
@@ -19,7 +24,7 @@ const Map = () => {
         setStartPoint(e.lngLat);
       } else {
         setRectangle([startPoint, e.lngLat]);
-        setIsDrawing(false);
+        stopDrawing();
       }
     }
   };
@@ -28,12 +33,6 @@ const Map = () => {
     if (isDrawing && startPoint) {
       setRectangle([startPoint, e.lngLat]);
     }
-  };
-
-  const startDrawing = () => {
-    setIsDrawing(true);
-    setRectangle(null);
-    setStartPoint(null);
   };
 
   return (
@@ -84,21 +83,6 @@ const Map = () => {
           />
         </Source>
       </Maplibre>
-      <button
-        onClick={startDrawing}
-        style={{
-          position: "absolute",
-          top: "10px",
-          right: "10px",
-          zIndex: 1,
-          padding: "10px",
-          backgroundColor: "#fff",
-          border: "1px solid #ccc",
-          borderRadius: "4px",
-        }}
-      >
-        Start Drawing!
-      </button>
     </>
   );
 };
