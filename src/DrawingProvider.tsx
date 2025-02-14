@@ -1,6 +1,13 @@
 import { LngLat } from "maplibre-gl";
 import React, { createContext, useState, useContext, useEffect } from "react";
 
+type Rectangle = [LngLat, LngLat];
+
+type MockFeature = {
+  id: number;
+  name: string;
+};
+
 interface DrawingContextProps {
   isDrawing: boolean;
   startDrawing: () => void;
@@ -15,6 +22,7 @@ interface DrawingContextProps {
   redo: () => void;
   canUndo: boolean;
   canRedo: boolean;
+  features: MockFeature[];
 }
 
 const DrawingContext = createContext<DrawingContextProps | undefined>(
@@ -31,10 +39,11 @@ export const DrawingProvider: React.FC<DrawingProviderProps> = ({
   const [isDrawing, setIsDrawing] = useState(false);
 
   const [startPoint, setStartPoint] = useState<LngLat | null>(null);
-  const [rectangle, setRectangle] = useState<[LngLat, LngLat] | null>(null);
+  const [rectangle, setRectangle] = useState<Rectangle | null>(null);
   const [area, setArea] = useState<number | null>(null);
-  const [history, setHistory] = useState<[LngLat, LngLat][]>([]);
+  const [history, setHistory] = useState<Rectangle[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
+  const [features, setFeatures] = useState<MockFeature[]>([]);
 
   const startDrawing = () => {
     setIsDrawing(true);
@@ -51,6 +60,7 @@ export const DrawingProvider: React.FC<DrawingProviderProps> = ({
     if (rectangle) {
       setHistory([...history.slice(0, historyIndex + 1), rectangle]);
       setHistoryIndex(historyIndex + 1);
+      fetchFeaturesInRectangle();
     }
   };
 
@@ -80,6 +90,23 @@ export const DrawingProvider: React.FC<DrawingProviderProps> = ({
     }
   }, [rectangle]);
 
+  // Mock API call
+  const fetchFeaturesInRectangle = async () => {
+    console.log("Fetching features...");
+
+    const random1to100 = () => Math.floor(Math.random() * 100) + 1;
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    console.log("Features fetched!");
+
+    setFeatures(
+      Array.from({ length: 10 }, (_, i) => ({
+        id: i,
+        name: `Feature ${random1to100()}`,
+      }))
+    );
+  };
+
   return (
     <DrawingContext.Provider
       value={{
@@ -96,6 +123,7 @@ export const DrawingProvider: React.FC<DrawingProviderProps> = ({
         redo,
         canUndo,
         canRedo,
+        features,
       }}
     >
       {children}

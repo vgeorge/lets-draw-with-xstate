@@ -12,6 +12,7 @@ const SidePanel = () => {
     canRedo,
     area,
     rectangle,
+    features,
   } = useDrawing();
 
   return (
@@ -49,6 +50,18 @@ const SidePanel = () => {
           <p>This rectangle has {Math.round(area)} map units.</p>
         )}
       </div>
+      {features.length > 0 && (
+        <div>
+          <h2 style={{ fontSize: "1.2em", marginBlock: "20px" }}>
+            Features in rectangle
+          </h2>
+          <ul style={{ padding: 0, margin: 20 }}>
+            {features.map((feature, i) => (
+              <li key={i}>{feature.name}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
