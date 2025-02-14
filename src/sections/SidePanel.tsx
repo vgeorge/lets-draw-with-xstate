@@ -10,7 +10,10 @@ const SidePanel = () => {
     redo,
     canUndo,
     canRedo,
+    area,
+    rectangle,
   } = useDrawing();
+
   return (
     <div
       style={{
@@ -40,6 +43,11 @@ const SidePanel = () => {
         <Button onClick={redo} disabled={!canRedo}>
           Redo
         </Button>
+      </div>
+      <div style={{ marginTop: "20px" }}>
+        {rectangle && area && (
+          <p>This rectangle has {Math.round(area)} map units.</p>
+        )}
       </div>
     </div>
   );

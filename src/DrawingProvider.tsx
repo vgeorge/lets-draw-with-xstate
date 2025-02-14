@@ -1,5 +1,5 @@
 import { LngLat } from "maplibre-gl";
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 
 interface DrawingContextProps {
   isDrawing: boolean;
@@ -9,6 +9,7 @@ interface DrawingContextProps {
   cancelDrawing: () => void;
   setStartPoint: React.Dispatch<React.SetStateAction<LngLat | null>>;
   rectangle: [LngLat, LngLat] | null;
+  area: number | null;
   setRectangle: React.Dispatch<React.SetStateAction<[LngLat, LngLat] | null>>;
   undo: () => void;
   redo: () => void;
@@ -31,6 +32,7 @@ export const DrawingProvider: React.FC<DrawingProviderProps> = ({
 
   const [startPoint, setStartPoint] = useState<LngLat | null>(null);
   const [rectangle, setRectangle] = useState<[LngLat, LngLat] | null>(null);
+  const [area, setArea] = useState<number | null>(null);
   const [history, setHistory] = useState<[LngLat, LngLat][]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
 
@@ -58,7 +60,6 @@ export const DrawingProvider: React.FC<DrawingProviderProps> = ({
       setRectangle(history[historyIndex - 1]);
     }
   };
-
   const redo = () => {
     if (historyIndex < history.length - 1) {
       setHistoryIndex(historyIndex + 1);
@@ -69,6 +70,16 @@ export const DrawingProvider: React.FC<DrawingProviderProps> = ({
   const canUndo = !isDrawing && historyIndex > 0;
   const canRedo = !isDrawing && historyIndex < history.length - 1;
 
+  useEffect(() => {
+    if (rectangle) {
+      const width = Math.abs(rectangle[1].lng - rectangle[0].lng);
+      const height = Math.abs(rectangle[1].lat - rectangle[0].lat);
+      setArea(width * height);
+    } else {
+      setArea(0);
+    }
+  }, [rectangle]);
+
   return (
     <DrawingContext.Provider
       value={{
@@ -78,6 +89,7 @@ export const DrawingProvider: React.FC<DrawingProviderProps> = ({
         startPoint,
         setStartPoint,
         rectangle,
+        area,
         setRectangle,
         cancelDrawing,
         undo,
