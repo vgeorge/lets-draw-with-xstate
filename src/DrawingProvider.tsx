@@ -10,6 +10,10 @@ interface DrawingContextProps {
   setStartPoint: React.Dispatch<React.SetStateAction<LngLat | null>>;
   rectangle: [LngLat, LngLat] | null;
   setRectangle: React.Dispatch<React.SetStateAction<[LngLat, LngLat] | null>>;
+  undo: () => void;
+  redo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
 }
 
 const DrawingContext = createContext<DrawingContextProps | undefined>(
@@ -27,6 +31,8 @@ export const DrawingProvider: React.FC<DrawingProviderProps> = ({
 
   const [startPoint, setStartPoint] = useState<LngLat | null>(null);
   const [rectangle, setRectangle] = useState<[LngLat, LngLat] | null>(null);
+  const [history, setHistory] = useState<[LngLat, LngLat][]>([]);
+  const [historyIndex, setHistoryIndex] = useState<number>(-1);
 
   const startDrawing = () => {
     setIsDrawing(true);
@@ -38,7 +44,30 @@ export const DrawingProvider: React.FC<DrawingProviderProps> = ({
     setStartPoint(null);
     setRectangle(null);
   };
-  const stopDrawing = () => setIsDrawing(false);
+  const stopDrawing = () => {
+    setIsDrawing(false);
+    if (rectangle) {
+      setHistory([...history.slice(0, historyIndex + 1), rectangle]);
+      setHistoryIndex(historyIndex + 1);
+    }
+  };
+
+  const undo = () => {
+    if (historyIndex > 0) {
+      setHistoryIndex(historyIndex - 1);
+      setRectangle(history[historyIndex - 1]);
+    }
+  };
+
+  const redo = () => {
+    if (historyIndex < history.length - 1) {
+      setHistoryIndex(historyIndex + 1);
+      setRectangle(history[historyIndex + 1]);
+    }
+  };
+
+  const canUndo = !isDrawing && historyIndex > 0;
+  const canRedo = !isDrawing && historyIndex < history.length - 1;
 
   return (
     <DrawingContext.Provider
@@ -51,6 +80,10 @@ export const DrawingProvider: React.FC<DrawingProviderProps> = ({
         rectangle,
         setRectangle,
         cancelDrawing,
+        undo,
+        redo,
+        canUndo,
+        canRedo,
       }}
     >
       {children}

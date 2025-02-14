@@ -40,9 +40,7 @@ const Map = () => {
       <Maplibre
         ref={mapRef}
         initialViewState={{
-          longitude: -100,
-          latitude: 40,
-          zoom: 3.5,
+          zoom: 2,
         }}
         style={{ width: "100%" }}
         mapStyle="https://demotiles.maplibre.org/style.json"
