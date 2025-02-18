@@ -2,13 +2,16 @@ import { useRef } from "react";
 import Maplibre, {
   Layer,
   MapLayerMouseEvent,
+  MapRef,
   Source,
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useDrawing } from "../DrawingProvider";
+import { MachineContext } from "../machine";
 
 const Map = () => {
-  const mapRef = useRef(null);
+  const actorRef = MachineContext.useActorRef();
+  const mapRef = useRef<MapRef>(null);
   const {
     isDrawing,
     stopDrawing,
@@ -46,6 +49,15 @@ const Map = () => {
         mapStyle="https://demotiles.maplibre.org/style.json"
         onClick={handleMapClick}
         onMouseMove={handleMouseMove}
+        onLoad={() => {
+          const mapInstance = mapRef.current?.getMap();
+          if (mapInstance) {
+            actorRef.send({
+              type: "event:map:load",
+              mapInstance,
+            });
+          }
+        }}
       >
         <Source
           id="rectangle"
