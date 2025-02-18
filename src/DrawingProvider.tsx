@@ -1,7 +1,7 @@
 import { LngLat } from "maplibre-gl";
 import React, { createContext, useState, useContext, useEffect } from "react";
 
-type Rectangle = [LngLat, LngLat];
+export type Rectangle = [LngLat, LngLat];
 
 type MockFeature = {
   id: number;

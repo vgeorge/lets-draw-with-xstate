@@ -6,36 +6,26 @@ import Maplibre, {
   Source,
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { useDrawing } from "../DrawingProvider";
 import { MachineContext } from "../machine";
+import { useSelector } from "@xstate/react";
 
 const Map = () => {
   const actorRef = MachineContext.useActorRef();
   const mapRef = useRef<MapRef>(null);
-  const {
-    isDrawing,
-    stopDrawing,
-    startPoint,
-    setStartPoint,
-    rectangle,
-    setRectangle,
-  } = useDrawing();
+  const rectangle = useSelector(actorRef, (state) => state.context.rectangle);
 
   const handleMapClick = (e: MapLayerMouseEvent) => {
-    if (isDrawing) {
-      if (!startPoint) {
-        setStartPoint(e.lngLat);
-      } else {
-        setRectangle([startPoint, e.lngLat]);
-        stopDrawing();
-      }
-    }
+    actorRef.send({
+      type: "event:map:click",
+      lngLat: e.lngLat,
+    });
   };
 
   const handleMouseMove = (e: MapLayerMouseEvent) => {
-    if (isDrawing && startPoint) {
-      setRectangle([startPoint, e.lngLat]);
-    }
+    actorRef.send({
+      type: "event:map:mouse:move",
+      lngLat: e.lngLat,
+    });
   };
 
   return (

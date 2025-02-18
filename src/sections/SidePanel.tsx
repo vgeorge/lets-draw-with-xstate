@@ -1,9 +1,10 @@
 import Button from "../Button";
 import { useDrawing } from "../DrawingProvider";
+import { MachineContext } from "../machine";
 
 const SidePanel = () => {
+  const actorRef = MachineContext.useActorRef();
   const {
-    startDrawing,
     isDrawing,
     cancelDrawing,
     undo,
@@ -30,7 +31,10 @@ const SidePanel = () => {
         Let's draw a rectangle!
       </h1>
       <div>
-        <Button onClick={startDrawing} disabled={isDrawing}>
+        <Button
+          onClick={() => actorRef.send({ type: "event:draw:start" })}
+          disabled={isDrawing}
+        >
           Start Drawing!
         </Button>
         <Button onClick={cancelDrawing} disabled={!isDrawing}>
